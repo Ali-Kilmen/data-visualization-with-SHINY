@@ -1,0 +1,197 @@
+---
+title: "Data Visulization Project"
+output:
+    flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(rio)
+library(tidyverse)
+library(janitor)
+library(readr)
+library(gcookbook)
+library(plotly)
+library(shiny)
+library(shinydashboard)
+
+data(uspopage, package="gcookbook")
+dvp <- uspopage
+as.numeric(dvp$Year)
+
+```
+
+
+
+Page 1 {data-orientation=rows data-icon=}
+======================================================================
+
+
+```{r}
+
+ui <- dashboardPage(
+  dashboardHeader(title = "My Dashboard"),
+  dashboardSidebar(
+    # Sidebar content
+  ),
+  dashboardBody(
+    # Body content
+    fluidRow(
+      column(
+        width = 7,
+        box(
+          title = "Small Panel",
+          width = NULL,
+          status = "info",
+          solidHeader = TRUE,
+          collapsible = TRUE,
+          p("Ali Kilmen."),
+          p("200527086"),
+          p("uspopage"),
+          p("5/6/2023")
+        )
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  # Server logic
+}
+
+shinyApp(ui, server)
+
+```
+
+
+### Chart 1
+
+```{r}
+
+boxplot(Thousands ~ AgeGroup, data = dvp,
+        theme_dark(),
+        col = "lightblue",
+        xlab = "Age Group",
+        ylab = "Population (Thousands)",
+        main = "Population Distribution by Age Group")
+
+```
+
+### Chart 2
+
+```{r}
+dvp.h1 <- hist(dvp$Year)
+
+```
+
+
+Page 2 {data-icon=}
+=================================================  
+
+
+
+### Chart 3
+
+
+```{r, warning= F, message=F}
+
+gg <- ggplot(dvp, aes(x = Year, y = Thousands)) +
+  geom_point() +
+  labs(x = "Year", y = "Population (Thousands)",
+       title = "Relationship between Year and Population")
+
+## Converting the plot upper to a Interactive plot 
+ggplotly(gg)
+
+
+```
+
+
+### Chart 4
+
+```{r message=FALSE, warning=FALSE}
+plot(Thousands ~ Year, data = dvp,
+     xlab = "Year", ylab = "Population (Thousands)",
+     main = "Relationship between Year and Population")
+
+
+
+```
+
+
+Page 3 {data-icon="fa-area-chart"}
+=====================================  
+
+
+```{r}
+colnames(uspopage)
+
+str(uspopage)
+
+# Total population
+total_population <- sum(uspopage$Thousands)
+
+# Minimum and maximum age groups
+min_agegroup <- levels(uspopage$AgeGroup)[1]
+max_agegroup <- levels(uspopage$AgeGroup)[length(levels(uspopage$AgeGroup))]
+
+# Average population by age group
+average_population <- tapply(uspopage$Thousands, uspopage$AgeGroup, mean)
+
+# Age group with the highest population
+max_population_agegroup <- names(average_population)[which.max(average_population)]
+
+# Display the summary statistics
+cat("Summary of the uspopage dataset:\n")
+cat("Total population:", total_population, "\n")
+cat("Minimum age group:", min_agegroup, "\n")
+cat("Maximum age group:", max_agegroup, "\n")
+cat("Average population by age group:\n")
+print(average_population)
+cat("Age group with the highest population:", max_population_agegroup, "\n")
+
+```
+
+
+
+
+### References
+
+```{r}
+
+ui <- dashboardPage(
+  dashboardHeader(title = "My Dashboard"),
+  dashboardSidebar(
+    # Sidebar content
+  ),
+  dashboardBody(
+    # Body content
+    fluidRow(
+      column(
+        width = 6,
+        box(
+          title = "Small Panel",
+          width = NULL,
+          status = "info",
+          solidHeader = TRUE,
+          collapsible = TRUE,
+          p("https://www.kaggle.com"),
+          p("https://stackoverflow.com"),
+        )
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  # Server logic
+}
+
+shinyApp(ui, server)
+
+
+```
+
